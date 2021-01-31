@@ -4,6 +4,24 @@ import os
 from bs4 import BeautifulSoup
 from datetime import datetime
 
+def split_day(body):
+    """
+    output = arr
+    arr[0] = month
+    arr[1] = date
+    arr[2] = month&date(for sort)
+    """
+    str_body = str(body)
+    split_str = str_body.split('.')
+    """
+    expected
+    '<li>신청: 02', ' 04(목) 14:00 / 02', ' 05(금) 14:00</li>'
+    """
+    month = split_str[-2][-2:]
+    day = split_str[-1][1:3]
+    MnD = month + day
+    return [month,day,MnD]
+    
 def __main__():
     target_url = 'https://github.com/brave-people/Dev-Event'
 
@@ -19,17 +37,24 @@ def __main__():
 
     # print(br_HTML[0]) #소스코드 확인
     soup = BeautifulSoup(br_HTML[1], 'html.parser')
-    links = soup.findAll("li")
+    events = soup.findAll("li")
     # print(links)
-    event_arr = []
-    for i in links:
+    
+    current_content = ''
+    for i in events:
         event_body = i.findAll("li")
-        event_title = i.findAll("strong")
+        event_title = i.find("strong")
         if len(event_body) > 0:
-            event_obj = event_title + event_body
-            event_arr.append(event_obj)
+            link = event_body[3].select("a")[0].attrs['href']
+            due_date = split_day(event_body[2])
+            # event_info = [event_title.text, link]
+            # event_info = event_info + split_day(event_body[2])
+            # content = f"<a href={link}> " + event_title.text + "</a>" + " / 마감 일자 : " + due_date[0] + "월 " + due_date[1] + "일 <br/>\n"
+            content = f"[{event_title.text}]({link})" + " / 마감 일자 : " + due_date[0] + "월 " + due_date[1] + "일 <br/>\n"
+            current_content += content
+            
         
-    print(event_arr[0])
+    print(current_content)
 
 if __name__ == '__main__':
     __main__()
