@@ -22,7 +22,7 @@ def split_day(body):
     MnD = month + day
     return [month,day,MnD]
     
-def __main__():
+def crawling_event():
     target_url = 'https://github.com/brave-people/Dev-Event'
 
     # url 객체 생성
@@ -54,7 +54,10 @@ def __main__():
             current_content += content
             
         
-    print(current_content)
+    return current_content
+
+def __main__():
+    print(crawling_event())
 
 if __name__ == '__main__':
     __main__()
