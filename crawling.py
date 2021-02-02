@@ -36,7 +36,7 @@ def crawling_event():
     br_HTML = list(html.split('<br>')[20:])   
 
     # print(br_HTML[0]) #소스코드 확인
-    soup = BeautifulSoup(br_HTML[1], 'html.parser')
+    soup = BeautifulSoup(br_HTML[0], 'html.parser')
     events = soup.findAll("li")
     # print(links)
     
