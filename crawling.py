@@ -50,7 +50,7 @@ def crawling_event():
             # event_info = [event_title.text, link]
             # event_info = event_info + split_day(event_body[2])
             # content = f"<a href={link}> " + event_title.text + "</a>" + " / 마감 일자 : " + due_date[0] + "월 " + due_date[1] + "일 <br/>\n"
-            content = f"[{event_title.text}]({link})" + " / 마감 일자 : " + due_date[0] + "월 " + due_date[1] + "일 <br/>\n"
+            content = f"[{event_title.text}]({link})" + "\n / 마감 일자 : " + due_date[0] + "월 " + due_date[1] + "일\n "+ event_body[1].text + " <br/>\n "
             current_content += content
             
         
