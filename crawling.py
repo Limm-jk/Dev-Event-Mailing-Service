@@ -3,6 +3,7 @@ import os
 
 from bs4 import BeautifulSoup
 from datetime import datetime
+from pytz import timezone
 
 def split_day(body):
     """
@@ -47,10 +48,11 @@ def crawling_event():
         if len(event_body) > 0:
             link = event_body[3].select("a")[0].attrs['href']
             due_date = split_day(event_body[2])
+            today = int(datetime.now(timezone('Asia/Seoul')).strftime('%m%d'))
             # event_info = [event_title.text, link]
             # event_info = event_info + split_day(event_body[2])
             # content = f"<a href={link}> " + event_title.text + "</a>" + " / 마감 일자 : " + due_date[0] + "월 " + due_date[1] + "일 <br/>\n"
-            content = f"[{event_title.text}]({link})" + "\n -마감 일자 : " + due_date[0] + "월 " + due_date[1] + "일\n -"+ event_body[1].text + " <br/>\n "
+            content = f"[{event_title.text}]({link})" + "\n -" + event_body[2].text + "\n -"+ event_body[1].text + " <br/>\n "
             current_content += content
             
         
@@ -58,6 +60,7 @@ def crawling_event():
 
 def __main__():
     print(crawling_event())
+    print(int(datetime.now(timezone('Asia/Seoul')).strftime('%m%d')))
 
 if __name__ == '__main__':
     __main__()
