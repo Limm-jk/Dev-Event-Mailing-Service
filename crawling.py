@@ -36,8 +36,8 @@ def crawling_event():
     # <br>로 split한 arr기준 index 20부터 21년 1월
     br_HTML = list(html.split('<br>')[20:])   
 
-    # print(br_HTML[0]) #소스코드 확인
-    soup = BeautifulSoup(br_HTML[0], 'html.parser')
+    # print(br_HTML[0]) #소스코드 확인 두달치를 확인
+    soup = BeautifulSoup(br_HTML[0] + br_HTML[1], 'html.parser')
     events = soup.findAll("li")
     # print(links)
     
@@ -52,8 +52,9 @@ def crawling_event():
             # event_info = [event_title.text, link]
             # event_info = event_info + split_day(event_body[2])
             # content = f"<a href={link}> " + event_title.text + "</a>" + " / 마감 일자 : " + due_date[0] + "월 " + due_date[1] + "일 <br/>\n"
-            content = f"[{event_title.text}]({link})" + "\n -" + event_body[2].text + "\n -"+ event_body[1].text + " <br/>\n "
-            current_content += content
+            if today <= int(due_date[2]):
+                content = f"[{event_title.text}]({link})" + "\n -" + event_body[2].text + "\n -"+ event_body[1].text + " <br/>\n "
+                current_content += content
             
         
     return current_content
