@@ -8,7 +8,7 @@ from crawling import get_html, split_event_html, content_list
 
 if __name__ == "__main__":
     access_token = os.environ['MY_GITHUB_TOKEN']
-    repository_name = "Dev-Event-Subscribe"
+    repository_name = "event-autoMailing-Demo"
     event_url = 'https://github.com/brave-people/Dev-Event'
 
     seoul_timezone = timezone('Asia/Seoul')
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     
     # repo에 접근
     g = Github(access_token)
-    repo = g.get_organization("brave-people").get_repo(repository_name)
+    repo = g.get_user().get_repo(repository_name)
     
     repo.create_issue(title=title, body=content)
     
