@@ -2,66 +2,103 @@ import requests
 import os
 
 from bs4 import BeautifulSoup
-from datetime import datetime
-from pytz import timezone
 
-def split_day(body):
+def get_html(url) -> str:
     """
-    output = arr
+    url에 해당되는 html을 str으로 가져옴
+    param url -> 가져 올 url / str
+    return str
+    """
+    response = requests.get(url)
+    return response.text
+
+def split_event_html(html, range = 20):
+    """    
+    html 중 이벤트 부분을 찾아서 반환
+    두달치로 고정
+    param html -> 페이지의 html / str
+    param range -> event의 위치 / int
+    return soup Object List
+    """
+    br_split_HTML = list(html.split('<br>')[range:])
+    soup = BeautifulSoup(br_split_HTML[0] + br_split_HTML[1], 'html.parser')
+    return soup.findAll("li")
+
+def find_due_day(body):
+    """
+    이벤트에서 마감일자를 찾아줌
+    param body -> 이벤트 날짜 / soup Object
+    return -> arr
     arr[0] = month
     arr[1] = date
-    arr[2] = month&date(for sort)
+    arr[2] = month&date
     """
     str_body = str(body)
-    split_str = str_body.split('.')
+    dot_split_str = str_body.split('.')
     """
     expected
     '<li>신청: 02', ' 04(목) 14:00 / 02', ' 05(금) 14:00</li>'
     """
-    month = split_str[-2][-2:]
-    day = split_str[-1][1:3]
+    month = dot_split_str[-2][-2:]
+    day = dot_split_str[-1][1:3]
     MnD = month + day
     return [month,day,MnD]
-    
-def crawling_event():
-    target_url = 'https://github.com/brave-people/Dev-Event'
 
-    # url 객체 생성
-    response = requests.get(target_url)
-
-    #웹 소스코드 추출
-    html = response.text
+def get_event_script(event):
+    """
+    event에서 
+    param event_body -> event / soup Object
+    return arr(str)
+    arr[0] = title
+    arr[1] = link
+    arr[2] = date
+    arr[3] = host
+    arr[4] = due
+    """
+    event_body = event.findAll("li")
+    event_title = event.find("strong")
     
-    # br을 기준으로 주제가 나뉨
-    # <br>로 split한 arr기준 index 20부터 21년 1월
-    br_HTML = list(html.split('<br>')[20:])   
-
-    # print(br_HTML[0]) #소스코드 확인 두달치를 확인
-    soup = BeautifulSoup(br_HTML[0] + br_HTML[1], 'html.parser')
-    events = soup.findAll("li")
-    # print(links)
-    
-    current_content = ''
-    for i in events:
-        event_body = i.findAll("li")
-        event_title = i.find("strong")
-        if len(event_body) > 0:
-            link = event_body[3].select("a")[0].attrs['href']
-            due_date = split_day(event_body[2])
-            today = int(datetime.now(timezone('Asia/Seoul')).strftime('%m%d'))
-            # event_info = [event_title.text, link]
-            # event_info = event_info + split_day(event_body[2])
-            # content = f"<a href={link}> " + event_title.text + "</a>" + " / 마감 일자 : " + due_date[0] + "월 " + due_date[1] + "일 <br/>\n"
-            if today <= int(due_date[2]):
-                content = f"[{event_title.text}]({link})" + "\n -" + event_body[2].text + "\n -"+ event_body[1].text + " <br/>\n "
-                current_content += content
-            
+    # link 추출 / 2월과 3월이 다름
+    if len(event_body) == 3:
+        link = event_title.select("a")[0].attrs['href']
+    elif len(event_body) == 4:
+        link = event_body[3].select("a")[0].attrs['href']
+    else:
+        link = "."
         
-    return current_content
+    date = event_body[2].text
+    host = event_body[1].text
+    due = find_due_day(event_body[2])[2]
+    
+    return [event_title.text, link, date, host, due]
+    
 
+def content_list(events, day):
+    """
+    event 데이터를 추출, issue의 Body로 정리함.
+    param events -> 이벤트의 리스트, 쓰레기 데이터가 존재함. / soup Object List
+    param day -> 오늘 날짜. 마감된 날짜를 제거하는 기준이 됨. / int
+    
+    return str
+    """
+    current_content = '' # output
+
+    for event in events:
+        if len(event.findAll("li")) > 0: # 내용이 존재하는 Object만 연산
+            event_arr = get_event_script(event)
+            if day <= int(event_arr[4]):
+                content = f"[{event_arr[0]}]({event_arr[1]})" + "\n -" + event_arr[2] + "\n -"+ event_arr[3] + " <br/>\n "
+                current_content += content
+                
+    return current_content
+                
 def __main__():
-    print(crawling_event())
-    print(int(datetime.now(timezone('Asia/Seoul')).strftime('%m%d')))
+    url = 'https://github.com/brave-people/Dev-Event'
+    date_now = 210 # 지금 날짜 int형으로
+    html = get_html(url)
+    event = split_event_html(html)
+    
+    print(content_list(event, date_now))
 
 if __name__ == '__main__':
     __main__()
