@@ -12,7 +12,7 @@ def get_html(url) -> str:
     response = requests.get(url)
     return response.text
 
-def split_event_html(html, range = 20):
+def split_event_html(html):
     """    
     html 중 이벤트 부분을 찾아서 반환
     두달치로 고정
@@ -20,8 +20,8 @@ def split_event_html(html, range = 20):
     param range -> event의 위치 / int
     return soup Object List
     """
-    br_split_HTML = list(html.split('<br>')[range:])
-    soup = BeautifulSoup(br_split_HTML[0] + br_split_HTML[1], 'html.parser')
+    split_HTML = list(html.split('<h2>')[5:])
+    soup = BeautifulSoup(split_HTML[0] + split_HTML[1], 'html.parser')
     return soup.findAll("li")
 
 def find_due_day(body):
