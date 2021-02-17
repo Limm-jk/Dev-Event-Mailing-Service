@@ -86,7 +86,7 @@ def get_event_script(event):
     return [event_title.text, link, date, host, due, start]
     
 
-def content_list(events, day):
+def content_list(events, today):
     """
     event 데이터를 추출, issue의 Body로 정리함.
     param events -> 이벤트의 리스트, 쓰레기 데이터가 존재함. / soup Object List
