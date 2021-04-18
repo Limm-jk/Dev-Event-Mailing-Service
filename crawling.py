@@ -3,7 +3,7 @@ import os
 
 from bs4 import BeautifulSoup
 
-def get_html(url) -> str:
+def get_html(url):
     """
     url에 해당되는 html을 str으로 가져옴
     param url -> 가져 올 url / str
@@ -20,7 +20,7 @@ def split_event_html(html):
     param range -> event의 위치 / int
     return soup Object List
     """
-    split_HTML = list(html.split('<h2>')[6:])
+    split_HTML = list(html.split('<h2>')[7:])
     soup = BeautifulSoup(split_HTML[0] + split_HTML[1], 'html.parser')
     return soup.findAll("li")
 
@@ -45,6 +45,9 @@ def find_due_day(body):
         day = dot_split_str[-1][1:3]
         MnD = month + day
         start_day = ''
+
+        // int형인지 확인 작업
+        int(MnD)
         if len(dot_split_str) == 3:
             start_day = find_start_day(dot_split_str[0],dot_split_str[1])
         return [month,day,MnD,start_day]
@@ -117,11 +120,12 @@ def content_list(events, today):
                 
 def __main__():
     url = 'https://github.com/brave-people/Dev-Event'
-    date_now = 210 # 지금 날짜 int형으로
+    date_now = 417 # 지금 날짜 int형으로
     html = get_html(url)
     event = split_event_html(html)
     
-    print(content_list(event, date_now))
+    # print(content_list(event, date_now))
+    print(event)
 
 if __name__ == '__main__':
     __main__()
