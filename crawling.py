@@ -46,7 +46,7 @@ def find_due_day(body):
         MnD = month + day
         start_day = ''
 
-        // int형인지 확인 작업
+        # int형인지 확인 작업
         int(MnD)
         if len(dot_split_str) == 3:
             start_day = find_start_day(dot_split_str[0],dot_split_str[1])
@@ -120,7 +120,7 @@ def content_list(events, today):
                 
 def __main__():
     url = 'https://github.com/brave-people/Dev-Event'
-    date_now = 417 # 지금 날짜 int형으로
+    date_now = 418 # 지금 날짜 int형으로
     html = get_html(url)
     event = split_event_html(html)
     
