@@ -120,7 +120,7 @@ def content_list(events, today):
                 
 def __main__():
     url = 'https://github.com/brave-people/Dev-Event'
-    date_now = 418 # 지금 날짜 int형으로
+    date_now = 424 # 지금 날짜 int형으로
     html = get_html(url)
     event = split_event_html(html)
     
