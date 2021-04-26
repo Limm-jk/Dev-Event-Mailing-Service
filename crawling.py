@@ -43,10 +43,10 @@ def find_day_by_body(body):
     """
 
     date_len = len(dot_split_str)
-    res = [0,0]
+    res = ["0", "0"]
 
     for i in range(date_len - 1):
-        res.insert(0, find_day_by_stub(dot_split_str[0], dot_split_str[1]))
+        res.insert(0, find_day_by_stub(dot_split_str[i], dot_split_str[i+1]))
 
     return res
 
@@ -56,8 +56,8 @@ def find_day_by_stub(mon_stub, day_stub):
     param -> str, str
     return -> str
     """
-    month = get_number_by_string(mon_stub)
-    days = get_number_by_string(day_stub)
+    month = get_number_by_string(mon_stub[-3:])
+    days = get_number_by_string(day_stub[:3])
     MnD = month + days
     return MnD
 
@@ -104,7 +104,7 @@ def content_list(events, today):
     
     return str
     """
-    current_content = '' # output
+    current_content = '0' # output
 
     for event in events:
         if len(event.findAll("li")) > 0: # 내용이 존재하는 Object만 연산
