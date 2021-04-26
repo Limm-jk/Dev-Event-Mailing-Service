@@ -1,5 +1,6 @@
 import requests
 import os
+import re
 
 from bs4 import BeautifulSoup
 
@@ -24,41 +25,44 @@ def split_event_html(html):
     soup = BeautifulSoup(split_HTML[0] + split_HTML[1], 'html.parser')
     return soup.findAll("li")
 
-def find_due_day(body):
+def find_day_by_body(body):
     """
-    이벤트에서 마감일자를 찾아줌
+    이벤트에서 일자를 찾아줌
     param body -> 이벤트 날짜 / soup Object
     return -> arr
-    arr[0] = month
-    arr[1] = date
-    arr[2] = month&date
-    arr[3] = start_day
+    arr[0] = due_day
+    arr[1] = start_day
     """
+
     str_body = str(body)
+
     dot_split_str = str_body.split('.')
     """
     expected
     '<li>신청: 02', ' 04(목) 14:00 / 02', ' 05(금) 14:00</li>'
     """
-    try:
-        month = dot_split_str[-2][-2:]
-        day = dot_split_str[-1][1:3]
-        MnD = month + day
-        start_day = ''
 
-        # int형인지 확인 작업
-        int(MnD)
-        if len(dot_split_str) == 3:
-            start_day = find_start_day(dot_split_str[0],dot_split_str[1])
-        return [month,day,MnD,start_day]
-    except:
-        return [0,0,0,0]
+    date_len = len(dot_split_str)
+    res = [0,0]
 
-def find_start_day(mon, day):
-    month = mon[-2:]
-    days = day[1:3]
+    for i in range(date_len - 1):
+        res.insert(0, find_day_by_stub(dot_split_str[0], dot_split_str[1]))
+
+    return res
+
+def find_day_by_stub(mon_stub, day_stub):
+    """
+    stub에서 정규표현식을 통해서 정수를 찾아주는 로직
+    param -> str, str
+    return -> str
+    """
+    month = get_number_by_string(mon_stub)
+    days = get_number_by_string(day_stub)
     MnD = month + days
     return MnD
+
+def get_number_by_string(str: str):
+    return re.findall("\d+", str)[0]
 
 def get_event_script(event):
     """
@@ -85,9 +89,9 @@ def get_event_script(event):
         
     date = event_body[2].text
     host = event_body[1].text
-    date_info = find_due_day(event_body[2])
-    due = date_info[2]
-    start = date_info[3]
+    date_info = find_day_by_body(event_body[2])
+    due = date_info[0]
+    start = date_info[1]
     
     return [event_title.text, link, date, host, due, start]
     
@@ -124,8 +128,8 @@ def __main__():
     html = get_html(url)
     event = split_event_html(html)
     
-    # print(content_list(event, date_now))
-    print(event)
+    print(content_list(event, date_now))
+    # print(event)
 
 if __name__ == '__main__':
     __main__()
