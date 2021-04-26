@@ -104,7 +104,7 @@ def content_list(events, today):
     
     return str
     """
-    current_content = '0' # output
+    current_content = '' # output
 
     for event in events:
         if len(event.findAll("li")) > 0: # 내용이 존재하는 Object만 연산
