@@ -1,4 +1,4 @@
-name: "$(Date:yyMMdd).$(Rev:r) Dev_Event_Crawler"
+name: "$(Date:yyMMdd).$(Rev:r)"
 
 on:
   push:
