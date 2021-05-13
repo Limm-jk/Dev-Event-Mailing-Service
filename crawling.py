@@ -80,12 +80,15 @@ def get_event_script(event):
     event_title = event.find("strong")
     
     # link 추출 / 2월과 3월이 다름
-    if len(event_body) == 3:
-        link = event_title.select("a")[0].attrs['href']
-    elif len(event_body) == 4:
-        link = event_body[3].select("a")[0].attrs['href']
-    else:
-        link = "."
+    try:
+        if len(event_body) == 3:
+            link = event_title.select("a")[0].attrs['href']
+        elif len(event_body) == 4:
+            link = event_body[3].select("a")[0].attrs['href']
+        else:
+            link = "."
+    except:
+        link = ''
         
     date = event_body[2].text
     host = event_body[1].text
