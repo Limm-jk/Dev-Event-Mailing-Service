@@ -16,13 +16,13 @@ def get_html(url):
 def split_event_html(html):
     """    
     html 중 이벤트 부분을 찾아서 반환
-    두달치로 고정
+    세달치로 고정
     param html -> 페이지의 html / str
     param range -> event의 위치 / int
     return soup Object List
     """
     split_HTML = list(html.split('<h2>')[8:])
-    soup = BeautifulSoup(split_HTML[0] + split_HTML[1], 'html.parser')
+    soup = BeautifulSoup(split_HTML[0] + split_HTML[1] + split_HTML[2], 'html.parser')
     return soup.findAll("li")
 
 def find_day_by_body(body):
