@@ -120,7 +120,7 @@ def content_list(events, today):
             event_arr = get_event_script(event)
 
             date_range = today + 100
-            if event_arr[5] == '':
+            if event_arr[5] == '0':
                 date_lim = int(event_arr[4])
             else:
                 date_lim = int(event_arr[5])
