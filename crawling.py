@@ -4,6 +4,7 @@ import re
 
 from bs4 import BeautifulSoup
 
+
 def get_html(url):
     """
     url에 해당되는 html을 str으로 가져옴
@@ -12,6 +13,7 @@ def get_html(url):
     """
     response = requests.get(url)
     return response.text
+
 
 def split_event_html(html):
     """    
@@ -24,6 +26,7 @@ def split_event_html(html):
     split_HTML = list(html.split('<h2>')[8:])
     soup = BeautifulSoup(split_HTML[0] + split_HTML[1] + split_HTML[2], 'html.parser')
     return soup.findAll("li")
+
 
 def find_day_by_body(body):
     """
@@ -46,9 +49,10 @@ def find_day_by_body(body):
     res = ["0", "0"]
 
     for i in range(date_len - 1):
-        res.insert(0, find_day_by_stub(dot_split_str[i], dot_split_str[i+1]))
+        res.insert(0, find_day_by_stub(dot_split_str[i], dot_split_str[i + 1]))
 
     return res
+
 
 def find_day_by_stub(mon_stub, day_stub):
     """
@@ -61,8 +65,10 @@ def find_day_by_stub(mon_stub, day_stub):
     MnD = month + days
     return MnD
 
+
 def get_number_by_string(str: str):
     return re.findall("\d+", str)[0]
+
 
 def get_event_script(event):
     """
@@ -78,7 +84,7 @@ def get_event_script(event):
     """
     event_body = event.findAll("li")
     event_title = event.find("strong")
-    
+
     # link 추출 / 2월과 3월이 다름
     try:
         if len(event_body) == 3:
@@ -89,15 +95,15 @@ def get_event_script(event):
             link = "."
     except:
         link = ''
-        
+
     date = event_body[2].text
     host = event_body[1].text
     date_info = find_day_by_body(event_body[2])
     due = date_info[0]
     start = date_info[1]
-    
+
     return [event_title.text, link, date, host, due, start]
-    
+
 
 def content_list(events, today):
     """
@@ -107,32 +113,35 @@ def content_list(events, today):
     
     return str
     """
-    current_content = '' # output
+    current_content = ''  # output
 
     for event in events:
-        if len(event.findAll("li")) > 0: # 내용이 존재하는 Object만 연산
+        if len(event.findAll("li")) > 0:  # 내용이 존재하는 Object만 연산
             event_arr = get_event_script(event)
-            
+
             date_range = today + 100
             if event_arr[5] == '':
                 date_lim = int(event_arr[4])
             else:
                 date_lim = int(event_arr[5])
-            
+
             if (today <= int(event_arr[4])) and (date_range >= date_lim):
-                content = f"[{event_arr[0]}]({event_arr[1]})" + "\n -" + event_arr[2] + "\n -"+ event_arr[3] + " <br/>\n "
+                content = f"[{event_arr[0]}]({event_arr[1]})" + "\n -" + event_arr[2] + "\n -" + event_arr[
+                    3] + " <br/>\n "
                 current_content += content
-                
+
     return current_content
-                
+
+
 def __main__():
     url = 'https://github.com/brave-people/Dev-Event'
     date_now = 424 # 지금 날짜 int형으로
     html = get_html(url)
     event = split_event_html(html)
-    
+
     print(content_list(event, date_now))
     # print(event)
+
 
 if __name__ == '__main__':
     __main__()
