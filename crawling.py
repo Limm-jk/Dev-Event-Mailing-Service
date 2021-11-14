@@ -23,7 +23,7 @@ def split_event_html(html):
     param range -> event의 위치 / int
     return soup Object List
     """
-    split_HTML = list(html.split('<h2>')[7:])
+    split_HTML = list(html.split('<h2')[6:])
     soup = BeautifulSoup(split_HTML[0] + split_HTML[1] + split_HTML[2], 'html.parser')
     return soup.findAll("li")
 
@@ -124,7 +124,7 @@ def content_list(events, today):
                 date_lim = int(event_arr[4])
             else:
                 date_lim = int(event_arr[5])
-                
+
             date_lim = check_new_year(date_lim, today)
             if (today <= int(event_arr[4])) and (date_range >= date_lim):
                 content = f"[{event_arr[0]}]({event_arr[1]})" + "\n -" + event_arr[2] + "\n -" + event_arr[
