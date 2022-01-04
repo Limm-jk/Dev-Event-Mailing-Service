@@ -114,39 +114,40 @@ def content_list(events, today):
     return str
     """
     current_content = ''  # output
-
+    cnt = 0
     for event in events:
         if len(event.findAll("li")) > 0:  # 내용이 존재하는 Object만 연산
             event_arr = get_event_script(event)
-
-            event_arr[4] = parse_number_date(event_arr[4], today)
-            event_arr[5] = parse_number_date(event_arr[5], today)
-
-            date_range = today + 100
-            if event_arr[5] == '0':
-                date_lim = event_arr[4]
-            else:
-                date_lim = event_arr[5]
-
-            if (today <= event_arr[4]) and (date_range >= date_lim):
+            
+            if is_activate_event(event_arr[4], event_arr[5], today):
+                cnt += 1
                 content = f"[{event_arr[0]}]({event_arr[1]})" + "\n -" + event_arr[2] + "\n -" + event_arr[
                     3] + " <br/>\n "
                 current_content += content
 
     return current_content
 
-def parse_number_date(date, today):
-    num_date = int(date)
+def is_activate_event(first_date, second_date, today) -> bool:
+    event_start_date = 0
+    event_end_date = int(first_date)
 
-    if today > 1100:
-        if num_date < 300:
-            return num_date + 1200
+    if second_date == '0':
+        event_start_date = int(first_date)
+    else:
+        event_start_date = int(second_date)
+        event_end_date = int(first_date)
 
-    return num_date
+        if event_start_date > event_end_date:
+            event_end_date += 1200
+            today += 1200
+
+    date_range = today + 100
+
+    return (today <= event_end_date) and (date_range >= event_start_date)
 
 def __main__():
     url = 'https://github.com/brave-people/Dev-Event'
-    date_now = 1223 # 지금 날짜 int형으로
+    date_now = 104 # 지금 날짜 int형으로
     html = get_html(url)
     event = split_event_html(html)
 
