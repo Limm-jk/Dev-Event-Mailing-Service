@@ -5,7 +5,7 @@ on:
     branches:
       - master
   schedule:
-    - cron: '0 23 * * *'
+    - cron: '0 23 * * SAT,SUN'
   # 꿀팁 : 한국의 자정은 "0 15 * * *"이다
   # 그럼 '0 23 * * *'은 아침에 보기 좋은 8시다.  
 
